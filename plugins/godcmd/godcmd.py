@@ -82,6 +82,10 @@ ADMIN_COMMANDS = {
         "alias": ["resetall", "重置所有会话"],
         "desc": "重置所有会话",
     },
+    "setHost": {
+        "alias": ["setHost", "更改默认sd_Host"],
+        "desc": "更改默认sd_Host",
+    },
     "scanp": {
         "alias": ["scanp", "扫描插件"],
         "desc": "扫描插件目录是否有新插件",
@@ -341,6 +345,28 @@ class Godcmd(Plugin):
                         elif cmd == "debug":
                             logger.setLevel("DEBUG")
                             ok, result = True, "DEBUG模式已开启"
+                                                elif cmd == "setHost":
+                            if len(args) != 1:
+                                ok, result = False, "请提供正确的Host"
+                            else:
+                                # 设置配置文件路径
+                                config_path = os.path.join(curdir, "../pictureChange/config.json")
+                                
+                                # 加载配置文件
+                                with open(config_path, "r", encoding="utf-8") as config_file:
+                                    config_data = json.load(config_file)
+                                
+                                # 修改 host 的值
+                                config_data["start"]["host"] = args[0]
+                                
+                                # 保存修改后的配置
+                                with open(config_path, "w", encoding="utf-8") as config_file:
+                                    json.dump(config_data, config_file, indent=4, ensure_ascii=False)
+                                
+                                PluginManager().reload_plugin("pictureChange")
+                                print("Host已成功更新为:",args[0])
+                                
+                            ok, result = True, "Host已成功更新"
                         elif cmd == "plist":
                             plugins = PluginManager().list_plugins()
                             ok = True
